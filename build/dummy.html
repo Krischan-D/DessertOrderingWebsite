@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Cart Example</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+  }
+  
+  .product {
+      text-align: center;
+      margin: 50px;
+  }
+  
+  .hidden {
+      display: none;
+  }
+  
+  .quantity-control {
+      margin-top: 10px;
+  }
+  
+  .quantity {
+      margin: 0 10px;
+      font-size: 20px;
+  }
+  
+  </style>
+    <div class="product">
+        <h2>Product Name</h2>
+        <button id="addToCartBtn">Add to Cart</button>
+        <div id="quantityControl" class="quantity-control hidden">
+            <button id="decrementBtn">-</button>
+            <span id="quantity" class="quantity">1</span>
+            <button id="incrementBtn">+</button>
+        </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const quantityControl = document.getElementById('quantityControl');
+        const quantityDisplay = document.getElementById('quantity');
+        const decrementBtn = document.getElementById('decrementBtn');
+        const incrementBtn = document.getElementById('incrementBtn');
+    
+        let quantity = 1;
+    
+        // Load initial states from local storage
+        loadQuantityFromLocalStorage();
+        loadToggleState();
+    
+        // Event listener for Add to Cart button
+        addToCartBtn.addEventListener('click', () => {
+            // Check if the product is already in the cart
+            const isInCart = JSON.parse(localStorage.getItem('isInCart'));
+    
+            if (isInCart) {
+                // If it is already in the cart, just toggle visibility of quantity control
+                quantityControl.classList.toggle('hidden');
+            } else {
+                // If not in cart, add to cart and show quantity control
+                localStorage.setItem('isInCart', JSON.stringify(true));
+                quantityControl.classList.remove('hidden');
+            }
+    
+            saveToggleState();
+        });
+    
+        // Increment quantity
+        incrementBtn.addEventListener('click', () => {
+            quantity++;
+            quantityDisplay.textContent = quantity;
+            saveQuantityToLocalStorage(quantity);
+        });
+    
+        // Decrement quantity
+        decrementBtn.addEventListener('click', () => {
+            if (quantity > 1) {
+                quantity--;
+                quantityDisplay.textContent = quantity;
+                saveQuantityToLocalStorage(quantity);
+            }
+        });
+    
+        // Function to save quantity to local storage
+        function saveQuantityToLocalStorage(quantity) {
+            localStorage.setItem('cartQuantity', quantity);
+        }
+    
+        // Function to load quantity from local storage
+        function loadQuantityFromLocalStorage() {
+            const savedQuantity = localStorage.getItem('cartQuantity');
+            if (savedQuantity) {
+                quantity = parseInt(savedQuantity);
+                quantityDisplay.textContent = quantity;
+            }
+        }
+    
+        // Function to save the toggle state to local storage
+        function saveToggleState() {
+            const isVisible = !quantityControl.classList.contains('hidden');
+            localStorage.setItem('toggleState', JSON.stringify(isVisible));
+        }
+    
+        // Function to load the toggle state from local storage
+        function loadToggleState() {
+            const savedState = localStorage.getItem('isInCart');
+            if (savedState) {
+                const isInCart = JSON.parse(savedState);
+                if (isInCart) {
+                    quantityControl.classList.remove('hidden'); // Show the quantity control if the product was added
+                }
+            }
+        }
+    });
+    
+    </script>
+</body>
+</html>
+
+
+
